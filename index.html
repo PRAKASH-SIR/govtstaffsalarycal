@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>सरकारी कर्मचारी तलब क्याल्कुलेटर</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;700;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FFFFFF;
+    --paper-dark:#EEF2F7;
+    --ink:#1C1C1C;
+    --ink-soft:#4B5563;
+    --crimson:#C8102E;
+    --crimson-deep:#8E0B21;
+    --navy:#003893;
+    --navy-deep:#00214F;
+    --gold:#96690F;
+    --gold-light:#FCEFCB;
+    --line:#C7CDD6;
+    --good:#166534;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+  }
+  input, select, textarea{
+    -webkit-user-select:text;
+    -moz-user-select:text;
+    -ms-user-select:text;
+    user-select:text;
+  }
+  body{
+    background:#F4F5F7;
+    color:var(--ink);
+    font-family:'Noto Sans Devanagari','Tiro Devanagari Hindi',sans-serif;
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+  .wrap{max-width:880px;margin:0 auto;}
+
+  .letterhead{
+    text-align:center;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-top:4px solid var(--navy);
+    border-radius:6px;
+    padding:22px 18px 18px;
+    margin-bottom:22px;
+    position:relative;
+  }
+  .seal{
+    width:60px;height:60px;
+    margin:0 auto 10px;
+    border-radius:50%;
+    background:var(--paper);
+    border:2px solid var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .seal::before{
+    content:"";
+    position:absolute;inset:4px;
+    border-radius:50%;
+    border:1px solid var(--gold);
+  }
+  .seal span{
+    position:relative;z-index:1;
+    font-family:'Noto Serif Devanagari',serif;
+    font-weight:900;
+    font-size:19px;
+    color:var(--navy-deep);
+  }
+  .eyebrow{
+    letter-spacing:.12em;
+    font-size:12.5px;
+    color:var(--navy);
+    font-weight:600;
+    text-transform:none;
+  }
+  h1{
+    font-family:'Noto Serif Devanagari',serif;
+    font-weight:900;
+    font-size:clamp(24px,4vw,34px);
+    color:var(--crimson-deep);
+    margin:6px 0 4px;
+  }
+  .sub{
+    font-size:14px;
+    color:var(--ink-soft);
+  }
+  .anusuchi{
+    display:inline-block;
+    margin-top:10px;
+    font-size:12.5px;
+    padding:4px 14px;
+    border:1px solid var(--navy);
+    border-radius:3px;
+    color:var(--navy-deep);
+    font-weight:600;
+    background:var(--paper-dark);
+  }
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:6px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.06);
+    padding:24px 22px;
+    margin-bottom:22px;
+  }
+  .card h2{
+    font-family:'Noto Serif Devanagari',serif;
+    font-size:17px;
+    color:var(--navy-deep);
+    margin:0 0 16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .card h2 .tag{
+    width:26px;height:26px;border-radius:4px;
+    background:var(--navy);
+    color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;
+    font-family:'Noto Sans Devanagari',sans-serif;
+    flex-shrink:0;
+  }
+
+  .field-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+  @media(max-width:600px){ .field-row{grid-template-columns:1fr;} }
+
+  label{
+    display:block;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  select{
+    width:100%;
+    font-family:inherit;
+    font-size:15px;
+    padding:11px 12px;
+    border-radius:4px;
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    appearance:none;
+    background-image:linear-gradient(45deg, transparent 50%, var(--navy) 50%), linear-gradient(135deg, var(--navy) 50%, transparent 50%);
+    background-position: calc(100% - 20px) center, calc(100% - 14px) center;
+    background-size:6px 6px, 6px 6px;
+    background-repeat:no-repeat;
+    cursor:pointer;
+    transition:border-color .15s;
+  }
+  select:focus{outline:none;border-color:var(--crimson);}
+  select:disabled{opacity:.5;cursor:not-allowed;}
+
+  .info-strip{
+    margin-top:16px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+  }
+  @media(max-width:600px){ .info-strip{grid-template-columns:1fr 1fr;} }
+  .info-strip div{
+    background:var(--paper-dark);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:10px 12px;
+    text-align:center;
+  }
+  .info-strip .lbl{font-size:11.5px;color:var(--ink-soft);margin-bottom:3px;}
+  .info-strip .val{font-size:16px;font-weight:700;color:var(--navy-deep);font-variant-numeric:tabular-nums;}
+
+  .calc-btn{
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:4px;
+    background:var(--navy);
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    font-family:'Noto Sans Devanagari',sans-serif;
+    cursor:pointer;
+    letter-spacing:.02em;
+    box-shadow:0 2px 6px rgba(0,33,79,0.25);
+    transition:background .12s, box-shadow .12s;
+  }
+  .calc-btn:hover{background:var(--navy-deep);box-shadow:0 3px 10px rgba(0,33,79,0.32);}
+  .calc-btn:active{box-shadow:0 1px 3px rgba(0,33,79,0.25);}
+
+  #result{display:none;}
+  .ledger{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:6px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.06);
+    overflow:hidden;
+  }
+  .ledger-head{
+    background:var(--navy-deep);
+    border-bottom:3px solid var(--crimson);
+    color:#fff;
+    padding:16px 22px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .ledger-head h3{
+    font-family:'Noto Serif Devanagari',serif;
+    margin:0;
+    font-size:17px;
+    font-weight:700;
+  }
+  .ledger-head .pos-badge{
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.35);
+    padding:5px 12px;
+    border-radius:3px;
+    font-size:12.5px;
+  }
+
+  .steps{padding:6px 22px;}
+  .step{
+    display:grid;
+    grid-template-columns:28px 1fr auto;
+    align-items:center;
+    gap:12px;
+    padding:13px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .step:last-child{border-bottom:none;}
+  .step-num{
+    width:26px;height:26px;
+    border-radius:50%;
+    background:var(--paper-dark);
+    color:var(--navy);
+    font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Noto Sans Devanagari',sans-serif;
+  }
+  .step-label{font-size:14.5px;color:var(--ink);}
+  .step-label small{display:block;font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .step-amt{
+    font-size:15.5px;
+    font-weight:700;
+    font-variant-numeric:tabular-nums;
+    color:var(--navy-deep);
+    white-space:nowrap;
+  }
+  .step-amt.neg{color:var(--crimson);}
+  .step-amt.pos{color:var(--good);}
+
+  .final-row{
+    margin:0 22px 22px;
+    padding:20px;
+    border-radius:6px;
+    background:var(--gold-light);
+    border:1px solid var(--gold);
+    border-left:4px solid var(--crimson);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .final-row .flabel{
+    font-family:'Noto Serif Devanagari',serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--crimson-deep);
+  }
+  .final-row .flabel small{display:block;font-size:12px;font-weight:500;color:var(--ink-soft);margin-top:3px;}
+  .final-row .famt{
+    font-size:clamp(24px,5vw,32px);
+    font-weight:900;
+    font-family:'Noto Serif Devanagari',serif;
+    color:var(--navy-deep);
+    font-variant-numeric:tabular-nums;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:34px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  footer .maker{
+    font-family:'Noto Serif Devanagari',serif;
+    font-weight:700;
+    color:var(--navy-deep);
+    font-size:14.5px;
+    margin-top:4px;
+  }
+
+  .note{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:10px;
+    line-height:1.6;
+  }
+  .warn{
+    font-size:12px;
+    color:var(--crimson-deep);
+    margin-top:10px;
+    line-height:1.6;
+    background:rgba(162,31,45,0.06);
+    border:1px solid rgba(162,31,45,0.25);
+    border-radius:8px;
+    padding:10px 12px;
+  }
+</style>
+</head>
+<body oncontextmenu="return false;">
+<script>
+  document.addEventListener('keydown', function(e){
+    const k = e.key ? e.key.toUpperCase() : '';
+    if (k === 'F12') { e.preventDefault(); return false; }
+    if (e.ctrlKey && e.shiftKey && (k === 'I' || k === 'J' || k === 'C')) { e.preventDefault(); return false; }
+    if (e.ctrlKey && (k === 'U' || k === 'S')) { e.preventDefault(); return false; }
+  });
+  document.addEventListener('dragstart', function(e){ e.preventDefault(); });
+</script>
+<div class="wrap">
+
+  <div class="letterhead">
+    <div class="seal"><span>ने</span></div>
+    <div class="eyebrow">निजामती, सेना, प्रहरी, सशस्त्र प्रहरी, स्वास्थ्य, शिक्षा, संसद तथा प्रदेश/स्थानीय सेवा</div>
+    <h1>सरकारी कर्मचारी तलब क्याल्कुलेटर</h1>
+    <div class="sub">सेवा, श्रेणी र ग्रेड छानेर अन्तिम तलब गणना गर्नुहोस्</div>
+    <div class="anusuchi">अनुसूची १–८ · आ.व. २०८३/०८४ (साउन १ देखि लागू)</div>
+  </div>
+
+  <!-- Step 1 -->
+  <div class="card">
+    <h2><span class="tag">१</span> सेवा छान्नुहोस्</h2>
+    <div>
+      <label for="serviceSelect">सेवा</label>
+      <select id="serviceSelect" onchange="onServiceChange()">
+        <option value="">-- छान्नुहोस् --</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="card">
+    <h2><span class="tag">२</span> पद / श्रेणी छनौट गर्नुहोस्</h2>
+    <div class="field-row">
+      <div>
+        <label for="posSelect">पद / श्रेणी</label>
+        <select id="posSelect" onchange="onPositionChange()" disabled>
+          <option value="">-- पहिले सेवा छान्नुहोस् --</option>
+        </select>
+      </div>
+      <div>
+        <label for="gradeSelect">ग्रेड संख्या</label>
+        <select id="gradeSelect" onchange="onGradeChange()" disabled>
+          <option value="">-- पहिले श्रेणी छान्नुहोस् --</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="info-strip" id="infoStrip" style="display:none;">
+      <div><div class="lbl">शुरु तलबमान</div><div class="val" id="infoBase">-</div></div>
+      <div><div class="lbl">ग्रेड दर</div><div class="val" id="infoRate">-</div></div>
+      <div><div class="lbl">अधिकतम ग्रेड</div><div class="val" id="infoMaxGrade">-</div></div>
+      <div><div class="lbl">कुल ग्रेड रकम</div><div class="val" id="infoGradeAmt">-</div></div>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="card">
+    <h2><span class="tag">३</span> सेवाको प्रकार र कट्टी विवरण</h2>
+    <div class="field-row">
+      <div>
+        <label for="empType">स्थायी वा करार</label>
+        <select id="empType" onchange="onEmpTypeChange()">
+          <option value="permanent">स्थायी (Permanent)</option>
+          <option value="contract">करार (Contract)</option>
+        </select>
+      </div>
+      <div id="citWrap">
+        <label for="citAmount">CIT कट्टी रकम (मासिक)</label>
+        <select id="citAmount" onchange="onCitChange()">
+          <option value="0">कट्टी नगर्ने (रु. ०)</option>
+          <option value="2000">रु. २,०००</option>
+          <option value="5000">रु. ५,०००</option>
+          <option value="custom">अन्य रकम लेख्नुहोस्...</option>
+        </select>
+        <input type="number" id="citCustom" placeholder="रकम रु. मा लेख्नुहोस्" style="display:none;margin-top:8px;width:100%;font-family:inherit;font-size:15px;padding:11px 12px;border-radius:4px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);" oninput="onCalcTrigger()">
+      </div>
+    </div>
+    
+    <div class="note" id="empNote" style="margin-top:14px;">स्थायी कर्मचारीका लागि सञ्चय कोष (१०%), बिमा (रु ४००) र आयकर (१%) कट्टी हुन्छ; प्रोत्साहन भत्ता (१०%) र महङ्गी भत्ता (रु ५,०००) थपिन्छ। थप रूपमा आवश्यकता अनुसार CIT कट्टी समेत घटाउन सकिन्छ।</div>
+
+    <button class="calc-btn" onclick="calculate()">गणना गर्नुहोस्</button>
+    <div class="note" style="margin-top:12px;">गणना विधि: (शुरु तलब + कुल ग्रेड रकम) मा सञ्चय कोष कट्टी (१०%) र बिमा (रु ४००) घटाई, प्रोत्साहन भत्ता (१०%) र महङ्गी भत्ता (रु ५,०००) जोडी, कर कट्टी (१%) घटाई र अन्त्यमा CIT कट्टी घटाएर अन्तिम तलब निकालिन्छ। करार कर्मचारीका लागि छुट्टै सूत्र प्रयोग हुन्छ।</div>
+  </div>
+
+  <div id="result">
+    <div class="ledger">
+      <div class="ledger-head">
+        <h3>तलब विवरण</h3>
+        <div class="pos-badge" id="posBadge">-</div>
+      </div>
+      <div class="steps" id="stepsBox"></div>
+      <div class="final-row">
+        <div class="flabel">अन्तिम मासिक तलब<small>(सबै कट्टी/थप पश्चात्)</small></div>
+        <div class="famt" id="finalAmt">रु. ०</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div>यो क्याल्कुलेटर नेपाल सरकार, अर्थ मन्त्रालयको तलबमान परिपत्र (आ.व. २०८३/०८४, साउन १ देखि लागू) मा आधारित छ।</div>
+    <div class="maker">Developed & Maintained by Prakash BK-9857014499</div>
+  </footer>
+
+</div>
+
+<script>
+  const SERVICES = {
+    "निजामती सेवा (प्रशासन) — अनुसूची-१": [
+      {group:"राजपत्रांकित",label:"मुख्य सचिव",base:84932,maxGrade:2,rate:2831},
+      {group:"राजपत्रांकित",label:"रा.प. विशिष्ट श्रेणी",base:79290,maxGrade:2,rate:2643},
+      {group:"राजपत्रांकित",label:"अतिरिक्त सचिव (निवृत्तिभरण प्रयोजन)",base:66539,maxGrade:0,rate:0},
+      {group:"राजपत्रांकित",label:"रा.प. प्रथम श्रेणी",base:62466,maxGrade:7,rate:2082},
+      {group:"राजपत्रांकित",label:"रा.प. द्वितीय श्रेणी",base:53611,maxGrade:8,rate:1787},
+      {group:"राजपत्रांकित",label:"रा.प. तृतीय श्रेणी",base:48058,maxGrade:8,rate:1602},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. प्रथम (अ.मा./निवृत्तिभरण प्रयोजन)",base:41517,maxGrade:0,rate:0},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. प्रथम श्रेणी (नायब सुब्बा आदि)",base:38203,maxGrade:10,rate:1273},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. द्वितीय (अ.मा./निवृत्तिभरण प्रयोजन)",base:37407,maxGrade:0,rate:0},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. द्वितीय श्रेणी (खरिदार आदि)",base:36192,maxGrade:10,rate:1206},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. तृतीय श्रेणी",base:30373,maxGrade:7,rate:1092},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. चतुर्थ श्रेणी",base:25690,maxGrade:6,rate:946},
+      {group:"हेभी सवारी चालक",label:"पाँचौं स्तर",base:45717,maxGrade:4,rate:1524},
+      {group:"हेभी सवारी चालक",label:"चतुर्थ स्तर",base:43794,maxGrade:2,rate:1460},
+      {group:"हेभी सवारी चालक",label:"तृतीय स्तर",base:41391,maxGrade:2,rate:1350},
+      {group:"हेभी सवारी चालक",label:"द्वितीय स्तर",base:36673,maxGrade:2,rate:1222},
+      {group:"हेभी सवारी चालक",label:"प्रथम स्तर",base:32701,maxGrade:2,rate:1090},
+      {group:"हलुका सवारी चालक",label:"पाँचौं स्तर",base:43794,maxGrade:4,rate:1460},
+      {group:"हलुका सवारी चालक",label:"चतुर्थ स्तर",base:41391,maxGrade:2,rate:1350},
+      {group:"हलुका सवारी चालक",label:"तृतीय स्तर",base:36673,maxGrade:2,rate:1222},
+      {group:"हलुका सवारी चालक",label:"द्वितीय स्तर",base:32701,maxGrade:2,rate:1090},
+      {group:"हलुका सवारी चालक",label:"प्रथम स्तर",base:30373,maxGrade:2,rate:1092},
+      {group:"हल्कारा",label:"पाँचौं स्तर",base:37267,maxGrade:4,rate:1242},
+      {group:"हल्कारा",label:"चतुर्थ स्तर",base:33759,maxGrade:2,rate:1126},
+      {group:"हल्कारा",label:"तृतीय स्तर",base:31891,maxGrade:2,rate:1063},
+      {group:"हल्कारा",label:"द्वितीय स्तर",base:30146,maxGrade:2,rate:1005},
+      {group:"हल्कारा",label:"प्रथम स्तर",base:28690,maxGrade:2,rate:946},
+      {group:"हुलाकी",label:"पाँचौं स्तर",base:36445,maxGrade:4,rate:1215},
+      {group:"हुलाकी",label:"चतुर्थ स्तर",base:32966,maxGrade:2,rate:1099},
+      {group:"हुलाकी",label:"तृतीय स्तर",base:30642,maxGrade:2,rate:1022},
+      {group:"हुलाकी",label:"द्वितीय स्तर",base:28918,maxGrade:2,rate:964},
+      {group:"हुलाकी",label:"प्रथम स्तर",base:27704,maxGrade:2,rate:923},
+      {group:"कार्यालय सहयोगी",label:"पाँचौं स्तर",base:36142,maxGrade:4,rate:1205},
+      {group:"कार्यालय सहयोगी",label:"चतुर्थ स्तर",base:32701,maxGrade:2,rate:1090},
+      {group:"कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1092},
+      {group:"कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:946},
+      {group:"कार्यालय सहयोगी",label:"प्रथम स्तर",base:27172,maxGrade:2,rate:906}
+    ],
+    "नेपाली सेना — अनुसूची-२": [
+      {group:"अधिकृत/जर्नेल स्तर",label:"प्रधान सेनापति",base:84932,maxGrade:2,rate:2831},
+      {group:"अधिकृत/जर्नेल स्तर",label:"रथी",base:81643,maxGrade:2,rate:2721},
+      {group:"अधिकृत/जर्नेल स्तर",label:"उप रथी",base:79290,maxGrade:2,rate:2643},
+      {group:"अधिकृत/जर्नेल स्तर",label:"सहायक रथी",base:67045,maxGrade:5,rate:2235},
+      {group:"अधिकृत/जर्नेल स्तर",label:"महा सेनानी",base:62466,maxGrade:5,rate:2082},
+      {group:"अधिकृत/जर्नेल स्तर",label:"प्रमुख सेनानी",base:57507,maxGrade:6,rate:1917},
+      {group:"अधिकृत/जर्नेल स्तर",label:"सेनानी",base:53611,maxGrade:8,rate:1787},
+      {group:"अधिकृत/जर्नेल स्तर",label:"सह-सेनानी",base:51929,maxGrade:6,rate:1731},
+      {group:"अधिकृत/जर्नेल स्तर",label:"उप-सेनानी",base:49613,maxGrade:6,rate:1644},
+      {group:"अधिकृत/जर्नेल स्तर",label:"सहायक सेनानी",base:48058,maxGrade:0,rate:0},
+      {group:"अधिकृत/जर्नेल स्तर",label:"अधिकृत क्याडेट",base:47960,maxGrade:0,rate:0},
+      {group:"अधिकृत/जर्नेल स्तर",label:"मानार्थ सह-सेनानी",base:47603,maxGrade:0,rate:0},
+      {group:"अधिकृत/जर्नेल स्तर",label:"मानार्थ उप-सेनानी",base:46628,maxGrade:0,rate:0},
+      {group:"जवान स्तर",label:"प्रमुख सुबेदार",base:45098,maxGrade:3,rate:1503},
+      {group:"जवान स्तर",label:"सुबेदार",base:38203,maxGrade:7,rate:1273},
+      {group:"जवान स्तर",label:"जमदार",base:36142,maxGrade:6,rate:1205},
+      {group:"जवान स्तर",label:"हुद्दागण, हुद्दा",base:31372,maxGrade:6,rate:1046},
+      {group:"जवान स्तर",label:"अमलदार",base:30373,maxGrade:7,rate:1092},
+      {group:"जवान स्तर",label:"प्यूठ",base:29297,maxGrade:8,rate:977},
+      {group:"जवान स्तर",label:"सिपाही",base:28690,maxGrade:8,rate:946},
+      {group:"जवान स्तर",label:"रिक्रूट",base:27172,maxGrade:0,rate:0},
+      {group:"जवान स्तर",label:"नन् कम्बाटेण्ट",base:27172,maxGrade:10,rate:906}
+    ],
+    "नेपाल प्रहरी — अनुसूची-३": [
+      {group:"अधिकृत स्तर",label:"प्र. महा-निरीक्षक",base:79290,maxGrade:2,rate:2643},
+      {group:"अधिकृत स्तर",label:"प्र. अ. महा-निरीक्षक",base:79290,maxGrade:2,rate:2643},
+      {group:"अधिकृत स्तर",label:"प्र. ना. महा-निरीक्षक",base:67045,maxGrade:3,rate:2235},
+      {group:"अधिकृत स्तर",label:"प्र. वरिष्ठ उपरीक्षक",base:62466,maxGrade:4,rate:2082},
+      {group:"अधिकृत स्तर",label:"प्र. उपरीक्षक",base:57507,maxGrade:5,rate:1917},
+      {group:"अधिकृत स्तर",label:"प्र. ना. उपरीक्षक",base:53611,maxGrade:5,rate:1787},
+      {group:"अधिकृत स्तर",label:"प्र. निरीक्षक",base:48058,maxGrade:8,rate:1602},
+      {group:"जवान स्तर",label:"प्र. वरिष्ठ नायब निरीक्षक",base:45098,maxGrade:5,rate:1503},
+      {group:"जवान स्तर",label:"प्र. ना. निरीक्षक",base:38203,maxGrade:8,rate:1273},
+      {group:"जवान स्तर",label:"प्र. सहायक निरीक्षक",base:36142,maxGrade:7,rate:1205},
+      {group:"जवान स्तर",label:"प्र. व. हवल्दार",base:31372,maxGrade:6,rate:1046},
+      {group:"जवान स्तर",label:"प्र. हवल्दार",base:30373,maxGrade:7,rate:1092},
+      {group:"जवान स्तर",label:"प्र. सहायक हवल्दार",base:29209,maxGrade:8,rate:974},
+      {group:"जवान स्तर",label:"प्र. जवान",base:28690,maxGrade:8,rate:946},
+      {group:"जवान स्तर",label:"रिक्रूट",base:27172,maxGrade:0,rate:0},
+      {group:"प्रहरी कार्यालय सहयोगी",label:"पाँचौं स्तर",base:36142,maxGrade:4,rate:1205},
+      {group:"प्रहरी कार्यालय सहयोगी",label:"चतुर्थ स्तर",base:32701,maxGrade:2,rate:1090},
+      {group:"प्रहरी कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1092},
+      {group:"प्रहरी कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:946},
+      {group:"प्रहरी कार्यालय सहयोगी",label:"प्रथम स्तर",base:27172,maxGrade:2,rate:906}
+    ],
+    "सशस्त्र प्रहरी बल, नेपाल — अनुसूची-४": [
+      {group:"अधिकृत स्तर",label:"स.प्र. महा-निरीक्षक",base:79290,maxGrade:2,rate:2643},
+      {group:"अधिकृत स्तर",label:"स.प्र. अ. महा-निरीक्षक",base:79290,maxGrade:2,rate:2643},
+      {group:"अधिकृत स्तर",label:"स.प्र. ना. महा-निरीक्षक",base:67045,maxGrade:3,rate:2235},
+      {group:"अधिकृत स्तर",label:"स.प्र. वरिष्ठ उपरीक्षक",base:62466,maxGrade:4,rate:2082},
+      {group:"अधिकृत स्तर",label:"स.प्र. उपरीक्षक",base:57507,maxGrade:5,rate:1917},
+      {group:"अधिकृत स्तर",label:"स.प्र. ना. उपरीक्षक",base:53611,maxGrade:5,rate:1787},
+      {group:"अधिकृत स्तर",label:"स.प्र. निरीक्षक",base:48058,maxGrade:8,rate:1602},
+      {group:"जवान स्तर",label:"स.प्र. वरिष्ठ नायब निरीक्षक",base:45098,maxGrade:2,rate:1503},
+      {group:"जवान स्तर",label:"स.प्र. ना. निरीक्षक",base:38203,maxGrade:6,rate:1273},
+      {group:"जवान स्तर",label:"स.प्र. सहायक निरीक्षक",base:36142,maxGrade:7,rate:1205},
+      {group:"जवान स्तर",label:"स.प्र. व. हवल्दार",base:31372,maxGrade:6,rate:1046},
+      {group:"जवान स्तर",label:"स.प्र. हवल्दार",base:30373,maxGrade:7,rate:1092},
+      {group:"जवान स्तर",label:"स.प्र. सहायक हवल्दार",base:29209,maxGrade:8,rate:974},
+      {group:"जवान स्तर",label:"स.प्र. जवान",base:28690,maxGrade:8,rate:946},
+      {group:"जवान स्तर",label:"रिक्रूट श्रेणी विहीन",base:27172,maxGrade:0,rate:0},
+      {group:"जवान स्तर",label:"फलोवर्स (सयस समेत)",base:27172,maxGrade:10,rate:906},
+      {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"पाँचौं स्तर",base:36142,maxGrade:4,rate:1205},
+      {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"चतुर्थ स्तर",base:32701,maxGrade:2,rate:1090},
+      {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1092},
+      {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:946},
+      {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"प्रथम स्तर",base:27172,maxGrade:2,rate:906}
+    ],
+    "स्वास्थ्य सेवा — अनुसूची-५": [
+      {group:"अधिकृत स्तर",label:"अधिकृत बाहौं",base:79290,maxGrade:2,rate:2643},
+      {group:"अधिकृत स्तर",label:"अधिकृत एघारौं",base:66539,maxGrade:3,rate:2218},
+      {group:"अधिकृत स्तर",label:"अधिकृत दशौं",base:62466,maxGrade:4,rate:2082},
+      {group:"अधिकृत स्तर",label:"अधिकृत नवौं",base:57649,maxGrade:4,rate:1922},
+      {group:"अधिकृत स्तर",label:"अधिकृत आठौं",base:53611,maxGrade:4,rate:1787},
+      {group:"अधिकृत स्तर",label:"अधिकृत सातौं",base:50436,maxGrade:5,rate:1681},
+      {group:"अधिकृत स्तर",label:"अधिकृत छैठौं",base:48058,maxGrade:5,rate:1602},
+      {group:"सहायक स्तर",label:"वरिष्ठ पाँचौं",base:41517,maxGrade:5,rate:1384},
+      {group:"सहायक स्तर",label:"सहायक पाँचौं",base:38203,maxGrade:6,rate:1273},
+      {group:"सहायक स्तर",label:"सहायक चौथो",base:36192,maxGrade:7,rate:1206},
+      {group:"सहायक स्तर",label:"सहायक तेश्रो",base:30373,maxGrade:7,rate:1092},
+      {group:"सहायक स्तर",label:"सहायक दोश्रो",base:28690,maxGrade:7,rate:946},
+      {group:"सहायक स्तर",label:"सहायक प्रथम",base:27172,maxGrade:10,rate:906}
+    ],
+    "संसद सेवा — अनुसूची-६": [
+      {group:"राजपत्रांकित कर्मचारी",label:"विशिष्ट",base:79290,maxGrade:2,rate:2643},
+      {group:"राजपत्रांकित कर्मचारी",label:"अतिरिक्त सचिव (पेन्सन प्रयोजन)",base:66539,maxGrade:0,rate:0},
+      {group:"राजपत्रांकित कर्मचारी",label:"प्रथम",base:62466,maxGrade:7,rate:2082},
+      {group:"राजपत्रांकित कर्मचारी",label:"द्वितीय",base:53611,maxGrade:8,rate:1787},
+      {group:"राजपत्रांकित कर्मचारी",label:"तृतीय",base:48058,maxGrade:8,rate:1602},
+      {group:"राजपत्र अनंकित कर्मचारी",label:"प्रथम अ.मा.",base:41517,maxGrade:0,rate:0},
+      {group:"राजपत्र अनंकित कर्मचारी",label:"प्रथम",base:38203,maxGrade:10,rate:1273},
+      {group:"राजपत्र अनंकित कर्मचारी",label:"द्वितीय अ.मा.प्रा.",base:37407,maxGrade:0,rate:0},
+      {group:"राजपत्र अनंकित कर्मचारी",label:"द्वितीय",base:36192,maxGrade:10,rate:1206},
+      {group:"राजपत्र अनंकित कर्मचारी",label:"तृतीय",base:30373,maxGrade:7,rate:1092},
+      {group:"राजपत्र अनंकित कर्मचारी",label:"चतुर्थ",base:25690,maxGrade:6,rate:946},
+      {group:"हेभी सवारी चालक",label:"पाँचौं तह",base:45717,maxGrade:4,rate:1524},
+      {group:"हेभी सवारी चालक",label:"चतुर्थ तह",base:43794,maxGrade:2,rate:1460},
+      {group:"हेभी सवारी चालक",label:"तृतीय तह",base:41391,maxGrade:2,rate:1350},
+      {group:"हेभी सवारी चालक",label:"द्वितीय तह",base:36673,maxGrade:2,rate:1222},
+      {group:"हेभी सवारी चालक",label:"प्रथम तह",base:32701,maxGrade:2,rate:1090},
+      {group:"हलुका सवारी चालक",label:"पाँचौं तह",base:43794,maxGrade:4,rate:1460},
+      {group:"हलुका सवारी चालक",label:"चतुर्थ तह",base:41391,maxGrade:2,rate:1350},
+      {group:"हलुका सवारी चालक",label:"तृतीय तह",base:36673,maxGrade:2,rate:1222},
+      {group:"हलुका सवारी चालक",label:"द्वितीय तह",base:32701,maxGrade:2,rate:1090},
+      {group:"हलुका सवारी चालक",label:"प्रथम तह",base:30373,maxGrade:2,rate:1092},
+      {group:"कार्यालय सहयोगी",label:"पाँचौं तह",base:36142,maxGrade:4,rate:1205},
+      {group:"कार्यालय सहयोगी",label:"चतुर्थ तह",base:32701,maxGrade:2,rate:1090},
+      {group:"कार्यालय सहयोगी",label:"तृतीय तह",base:30373,maxGrade:2,rate:1092},
+      {group:"कार्यालय सहयोगी",label:"द्वितीय तह",base:28690,maxGrade:2,rate:946},
+      {group:"कार्यालय सहयोगी",label:"प्रथम तह",base:27172,maxGrade:2,rate:906}
+    ],
+    "शिक्षा सेवा — अनुसूची-७": [
+      {group:"अधिकृत स्तर",label:"अधिकृत विशिष्ट श्रेणी",base:79290,maxGrade:2,rate:2643},
+      {group:"अधिकृत स्तर",label:"अधिकृत प्रथम श्रेणी",base:62466,maxGrade:7,rate:2082},
+      {group:"अधिकृत स्तर",label:"अधिकृत द्वितीय श्रेणी",base:53611,maxGrade:8,rate:1787},
+      {group:"अधिकृत स्तर",label:"अधिकृत तृतीय श्रेणी",base:48058,maxGrade:8,rate:1602},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. प्रथम श्रेणी",base:38203,maxGrade:10,rate:1273},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. द्वितीय श्रेणी",base:36192,maxGrade:10,rate:1206},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. तृतीय श्रेणी",base:30373,maxGrade:7,rate:1092},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. चतुर्थ श्रेणी",base:25690,maxGrade:6,rate:946},
+      {group:"कार्यालय सहयोगी",label:"पाँचौं स्तर",base:36142,maxGrade:4,rate:1205},
+      {group:"कार्यालय सहयोगी",label:"चतुर्थ स्तर",base:32701,maxGrade:2,rate:1090},
+      {group:"कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1092},
+      {group:"कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:946},
+      {group:"कार्यालय सहयोगी",label:"प्रथम स्तर",base:27172,maxGrade:2,rate:906}
+    ],
+    "प्रदेश तथा स्थानीय तह (निवृत्तिभरण प्रयोजन) — अनुसूची-८": [
+      {group:"अधिकृत स्तर",label:"अधिकृत एघारौं",base:66539,maxGrade:5,rate:2218},
+      {group:"अधिकृत स्तर",label:"अधिकृत दशौं",base:62466,maxGrade:7,rate:2082},
+      {group:"अधिकृत स्तर",label:"अधिकृत नवौं",base:57649,maxGrade:7,rate:1922},
+      {group:"अधिकृत स्तर",label:"अधिकृत आठौं",base:53611,maxGrade:7,rate:1787},
+      {group:"अधिकृत स्तर",label:"अधिकृत सातौं",base:50436,maxGrade:8,rate:1681},
+      {group:"अधिकृत स्तर",label:"अधिकृत छैठौं",base:48058,maxGrade:8,rate:1602},
+      {group:"सहायक स्तर",label:"सहायक पाँचौ",base:38203,maxGrade:10,rate:1273},
+      {group:"सहायक स्तर",label:"सहायक चौथो",base:36192,maxGrade:10,rate:1206},
+      {group:"हेभी सवारी चालक",label:"पाँचौं स्तर",base:45717,maxGrade:4,rate:1524},
+      {group:"हेभी सवारी चालक",label:"चतुर्थ स्तर",base:43794,maxGrade:2,rate:1460},
+      {group:"हेभी सवारी चालक",label:"तृतीय स्तर",base:41391,maxGrade:2,rate:1350},
+      {group:"हेभी सवारी चालक",label:"द्वितीय स्तर",base:36673,maxGrade:2,rate:1222},
+      {group:"हेभी सवारी चालक",label:"प्रथम स्तर",base:32701,maxGrade:2,rate:1090},
+      {group:"हलुका सवारी चालक",label:"पाँचौं स्तर",base:43794,maxGrade:4,rate:1460},
+      {group:"हलुका सवारी चालक",label:"चतुर्थ स्तर",base:41391,maxGrade:2,rate:1350},
+      {group:"हलुका सवारी चालक",label:"तृतीय स्तर",base:36673,maxGrade:2,rate:1222},
+      {group:"हलुका सवारी चालक",label:"द्वितीय स्तर",base:32701,maxGrade:2,rate:1090},
+      {group:"हलुका सवारी चालक",label:"प्रथम स्तर",base:30373,maxGrade:2,rate:1092},
+      {group:"कार्यालय सहयोगी",label:"पाँचौं स्तर",base:36142,maxGrade:4,rate:1205},
+      {group:"कार्यालय सहयोगी",label:"चतुर्थ स्तर",base:32701,maxGrade:2,rate:1090},
+      {group:"कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1092},
+      {group:"कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:946},
+      {group:"कार्यालय सहयोगी",label:"प्रथम स्तर",base:27172,maxGrade:2,rate:906}
+    ]
+  };
+
+  let POSITIONS = [];
+  const devDigits = ["०","१","२","३","४","५","६","७","८","९"];
+  
+  function toDev(e) {
+    return String(e).split("").map(e => /[0-9]/.test(e) ? devDigits[e] : e).join("");
+  }
+  
+  function fmt(e) {
+    const a = Math.round(e), r = a < 0 ? "-" : "", t = Math.abs(a).toString();
+    let l = t.length > 3 ? t.slice(-3) : t, b = t.length > 3 ? t.slice(0, -3) : "";
+    return "" !== b && (b = b.replace(/\B(?=(\d{2})+(?!\d))/g, ","), l = "," + l), "रु. " + r + toDev(b + l);
+  }
+  
+  function buildServiceOptions() {
+    const e = document.getElementById("serviceSelect");
+    Object.keys(SERVICES).forEach(a => {
+      const r = document.createElement("option");
+      r.value = a, r.textContent = a, e.appendChild(r);
+    });
+  }
+  
+  function onServiceChange() {
+    const e = document.getElementById("serviceSelect").value, a = document.getElementById("posSelect"), r = document.getElementById("gradeSelect");
+    if (a.innerHTML = "", r.innerHTML = "", r.disabled = !0, r.innerHTML = '<option value="">-- पहिले श्रेणी छान्नुहोस् --</option>', document.getElementById("infoStrip").style.display = "none", document.getElementById("result").style.display = "none", "" === e) return a.disabled = !0, a.innerHTML = '<option value="">-- पहिले सेवा छान्नुहोस् --</option>', void(POSITIONS = []);
+    POSITIONS = SERVICES[e], a.disabled = !1, a.innerHTML = '<option value="">-- छान्नुहोस् --</option>';
+    const t = {};
+    POSITIONS.forEach((e, a) => { t[e.group] || (t[e.group] = []), t[e.group].push({...e, idx: a}); });
+    Object.keys(t).forEach(e => {
+      const r = document.createElement("optgroup");
+      r.label = e, t[e].forEach(e => { const a = document.createElement("option"); a.value = e.idx, a.textContent = e.label, r.appendChild(a); }), a.appendChild(r);
+    });
+  }
+  
+  function onPositionChange() {
+    const e = document.getElementById("posSelect").value, a = document.getElementById("gradeSelect");
+    if (a.innerHTML = "", document.getElementById("result").style.display = "none", "" === e) return a.disabled = !0, a.innerHTML = '<option value="">-- पहिले श्रेणी छान्नुहोस् --</option>', void(document.getElementById("infoStrip").style.display = "none");
+    const r = POSITIONS[e];
+    for (let e = 0; e <= r.maxGrade; e++) { const r = document.createElement("option"); r.value = e, r.textContent = toDev(e) + " ग्रेड", a.appendChild(r); }
+    a.disabled = !1, document.getElementById("infoStrip").style.display = "grid", document.getElementById("infoBase").textContent = fmt(r.base), document.getElementById("infoRate").textContent = fmt(r.rate), document.getElementById("infoMaxGrade").textContent = toDev(r.maxGrade), document.getElementById("infoGradeAmt").textContent = fmt(0);
+  }
+  
+  function onGradeChange() {
+    const e = document.getElementById("posSelect").value, a = document.getElementById("gradeSelect").value;
+    if ("" === e || "" === a) return;
+    const r = POSITIONS[e].rate * Number(a);
+    document.getElementById("infoGradeAmt").textContent = fmt(r), document.getElementById("result").style.display = "none";
+  }
+  
+  function getCitAmount() {
+    const e = document.getElementById("citAmount").value;
+    if ("custom" === e) { const e = Number(document.getElementById("citCustom").value); return isNaN(e) || e < 0 ? 0 : e; }
+    return Number(e);
+  }
+  
+  function onEmpTypeChange() {
+    const e = document.getElementById("empType").value;
+    document.getElementById("citWrap").style.display = "block";
+    const a = document.getElementById("empNote");
+    a.textContent = "contract" === e 
+      ? "करार कर्मचारीलाई कर्मचारी सञ्चय कोष, बिमा कट्टी, महङ्गी भत्ता र आयकर कट्टी लाग्दैन — बरु आधार तलब (शुरु तलब + ग्रेड रकम) मा १०% प्रोत्साहन भत्ता थपेर CIT कट्टी मात्र घटाइन्छ।" 
+      : "स्थायी कर्मचारीका लागि सञ्चय कोष (१०%), बिमा (रु ४००) र आयकर (१%) कट्टी हुन्छ; प्रोत्साहन भत्ता (१०%) र महङ्गी भत्ता (रु ५,०००) थपिन्छ। थप रूपमा आवश्यकता अनुसार CIT कट्टी समेत घटाउन सकिन्छ।";
+    document.getElementById("result").style.display = "none";
+  }
+  
+  function onCitChange() {
+    const e = document.getElementById("citAmount").value;
+    document.getElementById("citCustom").style.display = "custom" === e ? "block" : "none", document.getElementById("result").style.display = "none";
+  }
+  
+  function onCalcTrigger() { document.getElementById("result").style.display = "none"; }
+  
+  function calculate() {
+    const e = document.getElementById("posSelect").value, a = document.getElementById("gradeSelect").value;
+    if ("" === e || "" === a) return void alert("कृपया पद/श्रेणी र ग्रेड संख्या दुवै छान्नुहोस्।");
+    const r = POSITIONS[e], t = Number(a), l = r.base, b = r.rate * t, o = document.getElementById("empType").value;
+    document.getElementById("posBadge").textContent = r.label + " · " + toDev(t) + " ग्रेड" + ("contract" === o ? " · करार" : "");
+    const s = document.getElementById("stepsBox");
+    let d, m;
+    s.innerHTML = "";
+    const u = l + b, citDeduction = getCitAmount();
+    
+    if ("contract" === o) {
+      const inc = .1 * u, totalWithInc = u + inc;
+      m = totalWithInc - citDeduction;
+      d = [
+        {label:"शुरु तलबमान", sub:r.label, amt:l, cls:""},
+        {label:"कुल ग्रेड रकम", sub:toDev(t)+" ग्रेड × "+fmt(r.rate), amt:b, cls:"pos"},
+        {label:"आधार तलब (शुरु तलब + कुल ग्रेड रकम)", sub:"", amt:u, cls:""},
+        {label:"प्रोत्साहन भत्ता (१०%)", sub:"+ "+fmt(inc), amt:totalWithInc, cls:"pos"},
+        {label:"CIT कट्टी", sub:"− "+fmt(citDeduction), amt:m, cls:"neg"}
+      ];
+    } else {
+      const pf = .1 * u, afterPf = u - pf, afterIns = afterPf - 400, afterInc = afterIns + pf, afterDa = afterInc + 5e3, tax = .01 * afterDa, finalBeforeCit = afterDa - tax;
+      m = finalBeforeCit - citDeduction;
+      d = [
+        {label:"शुरु तलबमान", sub:r.label, amt:l, cls:""},
+        {label:"कुल ग्रेड रकम", sub:toDev(t)+" ग्रेड × "+fmt(r.rate), amt:b, cls:"pos"},
+        {label:"जम्मा (शुरु तलब + कुल ग्रेड रकम)", sub:"", amt:u, cls:""},
+        {label:"कर्मचारी सञ्चय कोष कट्टी (१०%)", sub:"− "+fmt(pf), amt:afterPf, cls:"neg"},
+        {label:"बिमा कट्टी", sub:"− "+fmt(400), amt:afterIns, cls:"neg"},
+        {label:"प्रोत्साहन भत्ता (१०%)", sub:"+ "+fmt(pf), amt:afterInc, cls:"pos"},
+        {label:"महङ्गी भत्ता", sub:"+ "+fmt(5e3), amt:afterDa, cls:"pos"},
+        {label:"कर कट्टी (१%)", sub:"− "+fmt(tax), amt:finalBeforeCit, cls:"neg"},
+        {label:"CIT कट्टी", sub:"− "+fmt(citDeduction), amt:m, cls:"neg"}
+      ];
+    }
+    
+    d.forEach((e, a) => {
+      const r = document.createElement("div");
+      r.className = "step";
+      r.innerHTML = `\n      <div class="step-num">${toDev(a+1)}</div>\n      <div class="step-label">${e.label}${e.sub?`<small>${e.sub}</small>`:""}</div>\n      <div class="step-amt ${e.cls}">${fmt(e.amt)}</div>\n    `;
+      s.appendChild(r);
+    });
+    
+    document.getElementById("finalAmt").textContent = fmt(m);
+    document.getElementById("result").style.display = "block";
+    document.getElementById("result").scrollIntoView({behavior:"smooth", block:"nearest"});
+  }
+  
+  buildServiceOptions();
+</script>
+</body>
+</html>
