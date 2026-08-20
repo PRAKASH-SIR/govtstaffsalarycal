@@ -115,6 +115,27 @@
     background:var(--paper-dark);
   }
 
+  .update-notice{
+    background:var(--gold-light);
+    border:1px solid var(--gold);
+    border-left:4px solid var(--crimson);
+    border-radius:6px;
+    padding:12px 16px;
+    margin-bottom:22px;
+    font-size:13px;
+    color:var(--ink);
+    line-height:1.6;
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+  }
+  .update-notice .bell{
+    font-size:17px;
+    flex-shrink:0;
+    line-height:1.3;
+  }
+  .update-notice b{color:var(--crimson-deep);}
+
   .card{
     background:var(--paper);
     border:1px solid var(--line);
@@ -175,6 +196,18 @@
   }
   select:focus{outline:none;border-color:var(--crimson);}
   select:disabled{opacity:.5;cursor:not-allowed;}
+
+  input[type="text"], input[type="number"]{
+    width:100%;
+    font-family:inherit;
+    font-size:15px;
+    padding:11px 12px;
+    border-radius:4px;
+    border:1.5px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+  }
+  input[type="text"]:focus, input[type="number"]:focus{outline:none;border-color:var(--crimson);}
 
   .info-strip{
     margin-top:16px;
@@ -358,6 +391,11 @@
     <div class="anusuchi">अनुसूची १–८ · आ.व. २०८३/०८४ (साउन १ देखि लागू)</div>
   </div>
 
+  <div class="update-notice">
+    <span class="bell">🔔</span>
+    <span><b>चाँडै आउँदैछ अपडेटेड भर्जन:</b> दुर्गम भत्ता, महिला कर्मचारी कर छुट, प्रोत्साहन भत्ता दर आफैं मिलाउने सुविधा, थप ग्रेड/भत्ता व्यवस्था, नियुक्ति र जन्म मिति अनुसार स्वतः पेन्सन गणना (पुरानो र योगदानमा आधारित दुवै व्यवस्था) लगायतका थप सुविधाहरू। हाल यो क्याल्कुलेटर आधारभूत तलब गणनाका लागि मात्र प्रयोग गर्नुहोस्।</span>
+  </div>
+
   <!-- Step 1 -->
   <div class="card">
     <h2><span class="tag">१</span> सेवा छान्नुहोस्</h2>
@@ -418,10 +456,21 @@
       </div>
     </div>
     
-    <div class="note" id="empNote" style="margin-top:14px;">स्थायी कर्मचारीका लागि सञ्चय कोष (१०%), बिमा (रु ४००) र आयकर (१%) कट्टी हुन्छ; प्रोत्साहन भत्ता (१०%) र महङ्गी भत्ता (रु ५,०००) थपिन्छ। थप रूपमा आवश्यकता अनुसार CIT कट्टी समेत घटाउन सकिन्छ।</div>
+    <div class="note" id="empNote" style="margin-top:14px;">स्थायी कर्मचारीका लागि सञ्चय कोष (१०%) र बिमा (रु ४००) कट्टी हुन्छ; शुरु तलबमानको १०% प्रोत्साहन भत्ता र महङ्गी भत्ता (रु ५,०००) थपिन्छ। त्यसपछि CIT कट्टी घटाएर अन्त्यमा आयकर (१%) कट्टी हुन्छ।</div>
+
+    <div class="field-row" style="margin-top:18px;">
+      <div>
+        <label for="extraLabel">थप अन्य भत्ता (नाम) — ऐच्छिक</label>
+        <input type="text" id="extraLabel" placeholder="जस्तै: सेवा सुविधा भत्ता" oninput="onCalcTrigger()">
+      </div>
+      <div>
+        <label for="extraAmount">थप भत्ता रकम (रु.) — ऐच्छिक</label>
+        <input type="number" id="extraAmount" placeholder="रकम लेख्नुहोस्" oninput="onCalcTrigger()">
+      </div>
+    </div>
 
     <button class="calc-btn" onclick="calculate()">गणना गर्नुहोस्</button>
-    <div class="note" style="margin-top:12px;">गणना विधि: (शुरु तलब + कुल ग्रेड रकम) मा सञ्चय कोष कट्टी (१०%) र बिमा (रु ४००) घटाई, प्रोत्साहन भत्ता (१०%) र महङ्गी भत्ता (रु ५,०००) जोडी, कर कट्टी (१%) घटाई र अन्त्यमा CIT कट्टी घटाएर अन्तिम तलब निकालिन्छ। करार कर्मचारीका लागि छुट्टै सूत्र प्रयोग हुन्छ।</div>
+    <div class="note" style="margin-top:12px;">गणना विधि: (शुरु तलब + कुल ग्रेड रकम) मा सञ्चय कोष कट्टी (१०%) र बिमा (रु ४००) घटाई, शुरु तलबमानको १०% प्रोत्साहन भत्ता र महङ्गी भत्ता (रु ५,०००) जोडी, CIT कट्टी घटाई र अन्त्यमा कर कट्टी (१%) घटाएर अन्तिम तलब निकालिन्छ। थप अन्य भत्ता भरिएमा त्यो अन्तिम तलबमा थपिन्छ। करार कर्मचारीका लागि छुट्टै सूत्र प्रयोग हुन्छ।</div>
   </div>
 
   <div id="result">
@@ -450,7 +499,7 @@
   const SERVICES = {
     "निजामती सेवा (प्रशासन) — अनुसूची-१": [
       {group:"राजपत्रांकित",label:"मुख्य सचिव",base:84932,maxGrade:2,rate:2831},
-      {group:"राजपत्रांकित",label:"रा.प. विशिष्ट श्रेणी",base:79290,maxGrade:2,rate:2643},
+      {group:"राजपत्रांकित",label:"रा.प. विशिष्ट",base:79290,maxGrade:2,rate:2643},
       {group:"राजपत्रांकित",label:"अतिरिक्त सचिव (निवृत्तिभरण प्रयोजन)",base:66539,maxGrade:0,rate:0},
       {group:"राजपत्रांकित",label:"रा.प. प्रथम श्रेणी",base:62466,maxGrade:7,rate:2082},
       {group:"राजपत्रांकित",label:"रा.प. द्वितीय श्रेणी",base:53611,maxGrade:8,rate:1787},
@@ -459,8 +508,8 @@
       {group:"राजपत्र अनंकित",label:"रा.प.अनं. प्रथम श्रेणी (नायब सुब्बा आदि)",base:38203,maxGrade:10,rate:1273},
       {group:"राजपत्र अनंकित",label:"रा.प.अनं. द्वितीय (अ.मा./निवृत्तिभरण प्रयोजन)",base:37407,maxGrade:0,rate:0},
       {group:"राजपत्र अनंकित",label:"रा.प.अनं. द्वितीय श्रेणी (खरिदार आदि)",base:36192,maxGrade:10,rate:1206},
-      {group:"राजपत्र अनंकित",label:"रा.प.अनं. तृतीय श्रेणी",base:30373,maxGrade:7,rate:1092},
-      {group:"राजपत्र अनंकित",label:"रा.प.अनं. चतुर्थ श्रेणी",base:25690,maxGrade:6,rate:946},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. तृतीय श्रेणी",base:30373,maxGrade:7,rate:1012},
+      {group:"राजपत्र अनंकित",label:"रा.प.अनं. चतुर्थ श्रेणी",base:25690,maxGrade:6,rate:956},
       {group:"हेभी सवारी चालक",label:"पाँचौं स्तर",base:45717,maxGrade:4,rate:1524},
       {group:"हेभी सवारी चालक",label:"चतुर्थ स्तर",base:43794,maxGrade:2,rate:1460},
       {group:"हेभी सवारी चालक",label:"तृतीय स्तर",base:41391,maxGrade:2,rate:1350},
@@ -470,7 +519,7 @@
       {group:"हलुका सवारी चालक",label:"चतुर्थ स्तर",base:41391,maxGrade:2,rate:1350},
       {group:"हलुका सवारी चालक",label:"तृतीय स्तर",base:36673,maxGrade:2,rate:1222},
       {group:"हलुका सवारी चालक",label:"द्वितीय स्तर",base:32701,maxGrade:2,rate:1090},
-      {group:"हलुका सवारी चालक",label:"प्रथम स्तर",base:30373,maxGrade:2,rate:1092},
+      {group:"हलुका सवारी चालक",label:"प्रथम स्तर",base:30373,maxGrade:2,rate:1012},
       {group:"हल्कारा",label:"पाँचौं स्तर",base:37267,maxGrade:4,rate:1242},
       {group:"हल्कारा",label:"चतुर्थ स्तर",base:33759,maxGrade:2,rate:1126},
       {group:"हल्कारा",label:"तृतीय स्तर",base:31891,maxGrade:2,rate:1063},
@@ -483,8 +532,8 @@
       {group:"हुलाकी",label:"प्रथम स्तर",base:27704,maxGrade:2,rate:923},
       {group:"कार्यालय सहयोगी",label:"पाँचौं स्तर",base:36142,maxGrade:4,rate:1205},
       {group:"कार्यालय सहयोगी",label:"चतुर्थ स्तर",base:32701,maxGrade:2,rate:1090},
-      {group:"कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1092},
-      {group:"कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:946},
+      {group:"कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1012},
+      {group:"कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:956},
       {group:"कार्यालय सहयोगी",label:"प्रथम स्तर",base:27172,maxGrade:2,rate:906}
     ],
     "नेपाली सेना — अनुसूची-२": [
@@ -496,7 +545,7 @@
       {group:"अधिकृत/जर्नेल स्तर",label:"प्रमुख सेनानी",base:57507,maxGrade:6,rate:1917},
       {group:"अधिकृत/जर्नेल स्तर",label:"सेनानी",base:53611,maxGrade:8,rate:1787},
       {group:"अधिकृत/जर्नेल स्तर",label:"सह-सेनानी",base:51929,maxGrade:6,rate:1731},
-      {group:"अधिकृत/जर्नेल स्तर",label:"उप-सेनानी",base:49613,maxGrade:6,rate:1654},
+      {group:"अधिकृत/जर्नेल स्तर",label:"उप-सेनानी",base:49613,maxGrade:6,rate:1644},
       {group:"अधिकृत/जर्नेल स्तर",label:"सहायक सेनानी",base:48058,maxGrade:0,rate:0},
       {group:"अधिकृत/जर्नेल स्तर",label:"अधिकृत क्याडेट",base:47960,maxGrade:0,rate:0},
       {group:"अधिकृत/जर्नेल स्तर",label:"मानार्थ सह-सेनानी",base:47603,maxGrade:0,rate:0},
@@ -509,7 +558,24 @@
       {group:"जवान स्तर",label:"प्यूठ",base:29297,maxGrade:8,rate:977},
       {group:"जवान स्तर",label:"सिपाही",base:28690,maxGrade:8,rate:956},
       {group:"जवान स्तर",label:"रिक्रूट",base:27172,maxGrade:0,rate:0},
-      {group:"जवान स्तर",label:"नन् कम्बाटेण्ट",base:27172,maxGrade:10,rate:906}
+      {group:"जवान स्तर",label:"नन् कम्बाटेण्ट",base:27172,maxGrade:10,rate:906},
+      {group:"विमान सम्भार समूह",label:"पाइलट उपरथी",base:84853,maxGrade:2,rate:2828},
+      {group:"विमान सम्भार समूह",label:"सहायक रथी",base:77798,maxGrade:5,rate:2593},
+      {group:"विमान सम्भार समूह",label:"महा सेनानी",base:69600,maxGrade:5,rate:2320},
+      {group:"विमान सम्भार समूह",label:"प्रमुख सेनानी",base:67944,maxGrade:6,rate:2265},
+      {group:"विमान सम्भार समूह",label:"सेनानी",base:64844,maxGrade:8,rate:2161},
+      {group:"विमान सम्भार समूह",label:"सह-सेनानी",base:60050,maxGrade:6,rate:2002},
+      {group:"विमान सम्भार समूह",label:"उप-सेनानी",base:57659,maxGrade:6,rate:1922},
+      {group:"विमान सम्भार समूह",label:"वरिष्ठ सुबेदार",base:47593,maxGrade:7,rate:1596},
+      {group:"विमान सम्भार समूह",label:"सुबेदार",base:40176,maxGrade:7,rate:1339},
+      {group:"विमान सम्भार समूह",label:"जमदार",base:39497,maxGrade:6,rate:1394},
+      {group:"विमान सम्भार समूह",label:"हुद्दा",base:34155,maxGrade:6,rate:1139},
+      {group:"विमान सम्भार समूह",label:"अमलदार",base:31347,maxGrade:7,rate:1045},
+      {group:"विमान सम्भार समूह (नन् कम्बाटेण्ट)",label:"फलोअर्स पाँचौं स्तर",base:36142,maxGrade:4,rate:1205},
+      {group:"विमान सम्भार समूह (नन् कम्बाटेण्ट)",label:"फलोअर्स चतुर्थ स्तर",base:32701,maxGrade:2,rate:1090},
+      {group:"विमान सम्भार समूह (नन् कम्बाटेण्ट)",label:"फलोअर्स तृतीय स्तर",base:30373,maxGrade:2,rate:1012},
+      {group:"विमान सम्भार समूह (नन् कम्बाटेण्ट)",label:"फलोअर्स द्वितीय स्तर",base:28690,maxGrade:2,rate:956},
+      {group:"विमान सम्भार समूह (नन् कम्बाटेण्ट)",label:"फलोअर्स प्रथम स्तर",base:27172,maxGrade:2,rate:906}
     ],
     "नेपाल प्रहरी — अनुसूची-३": [
       {group:"अधिकृत स्तर",label:"प्र. महा-निरीक्षक",base:79290,maxGrade:2,rate:2643},
@@ -523,14 +589,14 @@
       {group:"जवान स्तर",label:"प्र. ना. निरीक्षक",base:38203,maxGrade:8,rate:1273},
       {group:"जवान स्तर",label:"प्र. सहायक निरीक्षक",base:36142,maxGrade:7,rate:1205},
       {group:"जवान स्तर",label:"प्र. व. हवल्दार",base:31372,maxGrade:6,rate:1046},
-      {group:"जवान स्तर",label:"प्र. हवल्दार",base:30373,maxGrade:7,rate:1092},
+      {group:"जवान स्तर",label:"प्र. हवल्दार",base:30373,maxGrade:7,rate:1012},
       {group:"जवान स्तर",label:"प्र. सहायक हवल्दार",base:29209,maxGrade:8,rate:974},
       {group:"जवान स्तर",label:"प्र. जवान",base:28690,maxGrade:8,rate:946},
       {group:"जवान स्तर",label:"रिक्रूट",base:27172,maxGrade:0,rate:0},
       {group:"प्रहरी कार्यालय सहयोगी",label:"पाँचौं स्तर",base:36142,maxGrade:4,rate:1205},
       {group:"प्रहरी कार्यालय सहयोगी",label:"चतुर्थ स्तर",base:32701,maxGrade:2,rate:1090},
-      {group:"प्रहरी कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1092},
-      {group:"प्रहरी कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:946},
+      {group:"प्रहरी कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1012},
+      {group:"प्रहरी कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:956},
       {group:"प्रहरी कार्यालय सहयोगी",label:"प्रथम स्तर",base:27172,maxGrade:2,rate:906}
     ],
     "सशस्त्र प्रहरी बल, नेपाल — अनुसूची-४": [
@@ -545,15 +611,15 @@
       {group:"जवान स्तर",label:"स.प्र. ना. निरीक्षक",base:38203,maxGrade:6,rate:1273},
       {group:"जवान स्तर",label:"स.प्र. सहायक निरीक्षक",base:36142,maxGrade:7,rate:1205},
       {group:"जवान स्तर",label:"स.प्र. व. हवल्दार",base:31372,maxGrade:6,rate:1046},
-      {group:"जवान स्तर",label:"स.प्र. हवल्दार",base:30373,maxGrade:7,rate:1092},
+      {group:"जवान स्तर",label:"स.प्र. हवल्दार",base:30373,maxGrade:7,rate:1012},
       {group:"जवान स्तर",label:"स.प्र. सहायक हवल्दार",base:29209,maxGrade:8,rate:974},
       {group:"जवान स्तर",label:"स.प्र. जवान",base:28690,maxGrade:8,rate:946},
       {group:"जवान स्तर",label:"रिक्रूट श्रेणी विहीन",base:27172,maxGrade:0,rate:0},
       {group:"जवान स्तर",label:"फलोवर्स (सयस समेत)",base:27172,maxGrade:10,rate:906},
       {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"पाँचौं स्तर",base:36142,maxGrade:4,rate:1205},
       {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"चतुर्थ स्तर",base:32701,maxGrade:2,rate:1090},
-      {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1092},
-      {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:946},
+      {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1012},
+      {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:956},
       {group:"सशस्त्र प्रहरी कार्यालय सहयोगी",label:"प्रथम स्तर",base:27172,maxGrade:2,rate:906}
     ],
     "स्वास्थ्य सेवा — अनुसूची-५": [
@@ -567,8 +633,8 @@
       {group:"सहायक स्तर",label:"वरिष्ठ पाँचौं",base:41517,maxGrade:5,rate:1384},
       {group:"सहायक स्तर",label:"सहायक पाँचौं",base:38203,maxGrade:6,rate:1273},
       {group:"सहायक स्तर",label:"सहायक चौथो",base:36192,maxGrade:7,rate:1206},
-      {group:"सहायक स्तर",label:"सहायक तेश्रो",base:30373,maxGrade:7,rate:1092},
-      {group:"सहायक स्तर",label:"सहायक दोश्रो",base:28690,maxGrade:7,rate:946},
+      {group:"सहायक स्तर",label:"सहायक तेश्रो",base:30373,maxGrade:7,rate:1012},
+      {group:"सहायक स्तर",label:"सहायक दोश्रो",base:28690,maxGrade:7,rate:956},
       {group:"सहायक स्तर",label:"सहायक प्रथम",base:27172,maxGrade:10,rate:906}
     ],
     "संसद सेवा — अनुसूची-६": [
@@ -581,8 +647,8 @@
       {group:"राजपत्र अनंकित कर्मचारी",label:"प्रथम",base:38203,maxGrade:10,rate:1273},
       {group:"राजपत्र अनंकित कर्मचारी",label:"द्वितीय अ.मा.प्रा.",base:37407,maxGrade:0,rate:0},
       {group:"राजपत्र अनंकित कर्मचारी",label:"द्वितीय",base:36192,maxGrade:10,rate:1206},
-      {group:"राजपत्र अनंकित कर्मचारी",label:"तृतीय",base:30373,maxGrade:7,rate:1092},
-      {group:"राजपत्र अनंकित कर्मचारी",label:"चतुर्थ",base:25690,maxGrade:6,rate:946},
+      {group:"राजपत्र अनंकित कर्मचारी",label:"तृतीय",base:30373,maxGrade:7,rate:1012},
+      {group:"राजपत्र अनंकित कर्मचारी",label:"चतुर्थ",base:25690,maxGrade:6,rate:956},
       {group:"हेभी सवारी चालक",label:"पाँचौं तह",base:45717,maxGrade:4,rate:1524},
       {group:"हेभी सवारी चालक",label:"चतुर्थ तह",base:43794,maxGrade:2,rate:1460},
       {group:"हेभी सवारी चालक",label:"तृतीय तह",base:41391,maxGrade:2,rate:1350},
@@ -592,26 +658,26 @@
       {group:"हलुका सवारी चालक",label:"चतुर्थ तह",base:41391,maxGrade:2,rate:1350},
       {group:"हलुका सवारी चालक",label:"तृतीय तह",base:36673,maxGrade:2,rate:1222},
       {group:"हलुका सवारी चालक",label:"द्वितीय तह",base:32701,maxGrade:2,rate:1090},
-      {group:"हलुका सवारी चालक",label:"प्रथम तह",base:30373,maxGrade:2,rate:1092},
+      {group:"हलुका सवारी चालक",label:"प्रथम तह",base:30373,maxGrade:2,rate:1012},
       {group:"कार्यालय सहयोगी",label:"पाँचौं तह",base:36142,maxGrade:4,rate:1205},
       {group:"कार्यालय सहयोगी",label:"चतुर्थ तह",base:32701,maxGrade:2,rate:1090},
-      {group:"कार्यालय सहयोगी",label:"तृतीय तह",base:30373,maxGrade:2,rate:1092},
-      {group:"कार्यालय सहयोगी",label:"द्वितीय तह",base:28690,maxGrade:2,rate:946},
+      {group:"कार्यालय सहयोगी",label:"तृतीय तह",base:30373,maxGrade:2,rate:1012},
+      {group:"कार्यालय सहयोगी",label:"द्वितीय तह",base:28690,maxGrade:2,rate:956},
       {group:"कार्यालय सहयोगी",label:"प्रथम तह",base:27172,maxGrade:2,rate:906}
     ],
-"शिक्षा सेवा (सामुदायिक विद्यालय) — अनुसूची-७":[
-{g:"माध्यमिक",l:"माध्यमिक (प्रथम श्रेणी)",b:62466,mx:6,r:2082},
-{g:"माध्यमिक",l:"माध्यमिक (द्वितीय श्रेणी)",b:53611,mx:8,r:1787},
-{g:"माध्यमिक",l:"माध्यमिक (तृतीय श्रेणी)",b:48058,mx:8,r:1602},
-{g:"निम्न माध्यमिक",l:"निम्न माध्यमिक (प्रथम श्रेणी)",b:50448,mx:8,r:1682},
-{g:"निम्न माध्यमिक",l:"निम्न माध्यमिक (द्वितीय श्रेणी)",b:48058,mx:8,r:1602},
-{g:"निम्न माध्यमिक",l:"निम्न माध्यमिक (तृतीय श्रेणी)",b:38203,mx:8,r:1273},
-{g:"प्राथमिक",l:"एस.एल.सी. उत्तीर्ण (प्रथम श्रेणी)",b:48058,mx:8,r:1602},
-{g:"प्राथमिक",l:"एस.एल.सी. उत्तीर्ण (द्वितीय श्रेणी)",b:38203,mx:8,r:1273},
-{g:"प्राथमिक",l:"एस.एल.सी. उत्तीर्ण (तृतीय श्रेणी)",b:36192,mx:6,r:1206},
-{g:"प्राथमिक",l:"दुई विषयसम्म एस.एल.सी. अनुत्तीर्ण",b:30373,mx:6,r:1012},
-{g:"प्राथमिक",l:"दुई विषयभन्दा बढी एस.एल.सी. अनुत्तीर्ण",b:28690,mx:6,r:956}
-],
+    "शिक्षा सेवा (सामुदायिक विद्यालय) — अनुसूची-७": [
+      {group:"माध्यमिक",label:"माध्यमिक (प्रथम श्रेणी)",base:62466,maxGrade:6,rate:2082},
+      {group:"माध्यमिक",label:"माध्यमिक (द्वितीय श्रेणी)",base:53611,maxGrade:8,rate:1787},
+      {group:"माध्यमिक",label:"माध्यमिक (तृतीय श्रेणी)",base:48058,maxGrade:8,rate:1602},
+      {group:"निम्न माध्यमिक",label:"निम्न माध्यमिक (प्रथम श्रेणी)",base:50448,maxGrade:8,rate:1682},
+      {group:"निम्न माध्यमिक",label:"निम्न माध्यमिक (द्वितीय श्रेणी)",base:48058,maxGrade:8,rate:1602},
+      {group:"निम्न माध्यमिक",label:"निम्न माध्यमिक (तृतीय श्रेणी)",base:38203,maxGrade:8,rate:1273},
+      {group:"प्राथमिक",label:"एस.एल.सी. उत्तीर्ण (प्रथम श्रेणी)",base:48058,maxGrade:8,rate:1602},
+      {group:"प्राथमिक",label:"एस.एल.सी. उत्तीर्ण (द्वितीय श्रेणी)",base:38203,maxGrade:8,rate:1273},
+      {group:"प्राथमिक",label:"एस.एल.सी. उत्तीर्ण (तृतीय श्रेणी)",base:36192,maxGrade:6,rate:1206},
+      {group:"प्राथमिक",label:"दुई विषयसम्म एस.एल.सी. अनुत्तीर्ण",base:30373,maxGrade:6,rate:1012},
+      {group:"प्राथमिक",label:"दुई विषयभन्दा बढी एस.एल.सी. अनुत्तीर्ण",base:28690,maxGrade:6,rate:956}
+    ],
     "प्रदेश तथा स्थानीय तह (निवृत्तिभरण प्रयोजन) — अनुसूची-८": [
       {group:"अधिकृत स्तर",label:"अधिकृत एघारौं",base:66539,maxGrade:5,rate:2218},
       {group:"अधिकृत स्तर",label:"अधिकृत दशौं",base:62466,maxGrade:7,rate:2082},
@@ -630,11 +696,11 @@
       {group:"हलुका सवारी चालक",label:"चतुर्थ स्तर",base:41391,maxGrade:2,rate:1350},
       {group:"हलुका सवारी चालक",label:"तृतीय स्तर",base:36673,maxGrade:2,rate:1222},
       {group:"हलुका सवारी चालक",label:"द्वितीय स्तर",base:32701,maxGrade:2,rate:1090},
-      {group:"हलुका सवारी चालक",label:"प्रथम स्तर",base:30373,maxGrade:2,rate:1092},
+      {group:"हलुका सवारी चालक",label:"प्रथम स्तर",base:30373,maxGrade:2,rate:1012},
       {group:"कार्यालय सहयोगी",label:"पाँचौं स्तर",base:36142,maxGrade:4,rate:1205},
       {group:"कार्यालय सहयोगी",label:"चतुर्थ स्तर",base:32701,maxGrade:2,rate:1090},
-      {group:"कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1092},
-      {group:"कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:946},
+      {group:"कार्यालय सहयोगी",label:"तृतीय स्तर",base:30373,maxGrade:2,rate:1012},
+      {group:"कार्यालय सहयोगी",label:"द्वितीय स्तर",base:28690,maxGrade:2,rate:956},
       {group:"कार्यालय सहयोगी",label:"प्रथम स्तर",base:27172,maxGrade:2,rate:906}
     ]
   };
@@ -693,13 +759,20 @@
     return Number(e);
   }
   
+  function getExtraAllowance() {
+    const nameEl = document.getElementById("extraLabel"), amtEl = document.getElementById("extraAmount");
+    const name = nameEl && nameEl.value.trim() ? nameEl.value.trim() : "थप भत्ता";
+    const amt = amtEl ? Number(amtEl.value) : 0;
+    return { name, amount: isNaN(amt) || amt < 0 ? 0 : amt };
+  }
+  
   function onEmpTypeChange() {
     const e = document.getElementById("empType").value;
     document.getElementById("citWrap").style.display = "block";
     const a = document.getElementById("empNote");
     a.textContent = "contract" === e 
-      ? "करार कर्मचारीलाई कर्मचारी सञ्चय कोष, बिमा कट्टी, महङ्गी भत्ता र आयकर कट्टी लाग्दैन — बरु आधार तलब (शुरु तलब + ग्रेड रकम) मा १०% प्रोत्साहन भत्ता थपेर CIT कट्टी मात्र घटाइन्छ।" 
-      : "स्थायी कर्मचारीका लागि सञ्चय कोष (१०%), बिमा (रु ४००) र आयकर (१%) कट्टी हुन्छ; प्रोत्साहन भत्ता (१०%) र महङ्गी भत्ता (रु ५,०००) थपिन्छ। थप रूपमा आवश्यकता अनुसार CIT कट्टी समेत घटाउन सकिन्छ।";
+      ? "करार कर्मचारीलाई कर्मचारी सञ्चय कोष, बिमा कट्टी, महङ्गी भत्ता र आयकर कट्टी लाग्दैन — बरु शुरु तलबमानको १०% प्रोत्साहन भत्ता थपेर CIT कट्टी मात्र घटाइन्छ।" 
+      : "स्थायी कर्मचारीका लागि सञ्चय कोष (१०%) र बिमा (रु ४००) कट्टी हुन्छ; शुरु तलबमानको १०% प्रोत्साहन भत्ता र महङ्गी भत्ता (रु ५,०००) थपिन्छ। त्यसपछि CIT कट्टी घटाएर अन्त्यमा आयकर (१%) कट्टी हुन्छ।";
     document.getElementById("result").style.display = "none";
   }
   
@@ -721,29 +794,30 @@
     const u = l + b, citDeduction = getCitAmount();
     
     if ("contract" === o) {
-      const inc = .1 * u, totalWithInc = u + inc;
-      m = totalWithInc - citDeduction;
+      const inc = .1 * l, totalWithInc = u + inc, afterCit = totalWithInc - citDeduction, extra = getExtraAllowance();
+      m = afterCit + extra.amount;
       d = [
         {label:"शुरु तलबमान", sub:r.label, amt:l, cls:""},
-        {label:"कुल ग्रेड रकम", sub:toDev(t)+" ग्रेड × "+fmt(r.rate), amt:b, cls:"pos"},
-        {label:"आधार तलब (शुरु तलब + कुल ग्रेड रकम)", sub:"", amt:u, cls:""},
-        {label:"प्रोत्साहन भत्ता (१०%)", sub:"+ "+fmt(inc), amt:totalWithInc, cls:"pos"},
-        {label:"CIT कट्टी", sub:"− "+fmt(citDeduction), amt:m, cls:"neg"}
+        {label:"आधार तलब (शुरु तलब + ग्रेड रकम)", sub:"", amt:u, cls:""},
+        {label:"प्रोत्साहन भत्ता (शुरु तलबमानको १०%)", sub:"+ "+fmt(inc), amt:totalWithInc, cls:"pos"},
+        {label:"CIT कट्टी", sub:"− "+fmt(citDeduction), amt:afterCit, cls:"neg"}
       ];
+      if (extra.amount > 0) d.push({label:extra.name, sub:"+ "+fmt(extra.amount), amt:m, cls:"pos"});
     } else {
-      const pf = .1 * u, afterPf = u - pf, afterIns = afterPf - 400, afterInc = afterIns + pf, afterDa = afterInc + 5e3, tax = .01 * afterDa, finalBeforeCit = afterDa - tax;
-      m = finalBeforeCit - citDeduction;
+      const pf = .1 * u, afterPf = u - pf, afterIns = afterPf - 400, inc = .1 * l, afterInc = afterIns + inc, afterDa = afterInc + 5e3, afterCit = afterDa - citDeduction, tax = .01 * afterCit, finalAmt = afterCit - tax, extra = getExtraAllowance();
+      m = finalAmt + extra.amount;
       d = [
         {label:"शुरु तलबमान", sub:r.label, amt:l, cls:""},
         {label:"कुल ग्रेड रकम", sub:toDev(t)+" ग्रेड × "+fmt(r.rate), amt:b, cls:"pos"},
         {label:"जम्मा (शुरु तलब + कुल ग्रेड रकम)", sub:"", amt:u, cls:""},
         {label:"कर्मचारी सञ्चय कोष कट्टी (१०%)", sub:"− "+fmt(pf), amt:afterPf, cls:"neg"},
         {label:"बिमा कट्टी", sub:"− "+fmt(400), amt:afterIns, cls:"neg"},
-        {label:"प्रोत्साहन भत्ता (१०%)", sub:"+ "+fmt(pf), amt:afterInc, cls:"pos"},
+        {label:"प्रोत्साहन भत्ता (शुरु तलबमानको १०%)", sub:"+ "+fmt(inc), amt:afterInc, cls:"pos"},
         {label:"महङ्गी भत्ता", sub:"+ "+fmt(5e3), amt:afterDa, cls:"pos"},
-        {label:"कर कट्टी (१%)", sub:"− "+fmt(tax), amt:finalBeforeCit, cls:"neg"},
-        {label:"CIT कट्टी", sub:"− "+fmt(citDeduction), amt:m, cls:"neg"}
+        {label:"CIT कट्टी", sub:"− "+fmt(citDeduction), amt:afterCit, cls:"neg"},
+        {label:"कर कट्टी (१%)", sub:"− "+fmt(tax), amt:finalAmt, cls:"neg"}
       ];
+      if (extra.amount > 0) d.push({label:extra.name, sub:"+ "+fmt(extra.amount), amt:m, cls:"pos"});
     }
     
     d.forEach((e, a) => {
