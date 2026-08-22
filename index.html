@@ -2,7 +2,7 @@
 <html lang="ne">
 <head>
 <meta charset="UTF-8">
-  <!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4D4B3LL95Y"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -359,16 +359,6 @@
     margin-top:10px;
     line-height:1.6;
   }
-  .warn{
-    font-size:12px;
-    color:var(--crimson-deep);
-    margin-top:10px;
-    line-height:1.6;
-    background:rgba(162,31,45,0.06);
-    border:1px solid rgba(162,31,45,0.25);
-    border-radius:8px;
-    padding:10px 12px;
-  }
 </style>
 </head>
 <body oncontextmenu="return false;">
@@ -444,6 +434,23 @@
           <option value="contract">करार (Contract)</option>
         </select>
       </div>
+      <div id="pensionWrap">
+        <label for="pensionType">नियुक्ति मिति (पेन्सन व्यवस्था)</label>
+        <select id="pensionType" onchange="onCalcTrigger()">
+          <option value="old">२०७५ साउन १ अघि (पुरानो पेन्सन)</option>
+          <option value="new" selected>२०७५ साउन १ पछि (योगदानमा आधारित ६%)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-row" style="margin-top:14px;">
+      <div>
+        <label for="maritalStatus">वैवाहिक स्थिति (कर प्रयोजनका लागि)</label>
+        <select id="maritalStatus" onchange="onCalcTrigger()">
+          <option value="single">अविवाहित (Unmarried)</option>
+          <option value="married">विवाहित (Married)</option>
+        </select>
+      </div>
       <div id="citWrap">
         <label for="citAmount">CIT कट्टी रकम (मासिक)</label>
         <select id="citAmount" onchange="onCitChange()">
@@ -452,11 +459,11 @@
           <option value="5000">रु. ५,०००</option>
           <option value="custom">अन्य रकम लेख्नुहोस्...</option>
         </select>
-        <input type="number" id="citCustom" placeholder="रकम रु. मा लेख्नुहोस्" style="display:none;margin-top:8px;width:100%;font-family:inherit;font-size:15px;padding:11px 12px;border-radius:4px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);" oninput="onCalcTrigger()">
+        <input type="number" id="citCustom" placeholder="रकम रु. मा लेख्नुहोस्" style="display:none;margin-top:8px;" oninput="onCalcTrigger()">
       </div>
     </div>
     
-    <div class="note" id="empNote" style="margin-top:14px;">स्थायी कर्मचारीका लागि सञ्चय कोष (१०%) र बिमा (रु ४००) कट्टी हुन्छ; शुरु तलबमानको १०% प्रोत्साहन भत्ता र महङ्गी भत्ता (रु ५,०००) थपिन्छ। त्यसपछि CIT कट्टी घटाएर अन्त्यमा आयकर (१%) कट्टी हुन्छ।</div>
+    <div class="note" id="empNote" style="margin-top:14px;">स्थायी कर्मचारीका लागि सञ्चय कोष (१०%), बिमा (रु ४००) र नियुक्ति मिति अनुसार योगदानमा आधारित पेन्सन (६%) कट्टी हुन्छ; शुरु तलबमानको १०% प्रोत्साहन भत्ता र महङ्गी भत्ता (रु ५,०००) थपिन्छ। CIT र पेन्सन/कोष कट्टी घटाई आयकर (स्ल्याब अनुसार) कट्टी गरिन्छ।</div>
 
     <div class="field-row" style="margin-top:18px;">
       <div>
@@ -470,7 +477,6 @@
     </div>
 
     <button class="calc-btn" onclick="calculate()">गणना गर्नुहोस्</button>
-    <div class="note" style="margin-top:12px;">गणना विधि: (शुरु तलब + कुल ग्रेड रकम) मा सञ्चय कोष कट्टी (१०%) र बिमा (रु ४००) घटाई, शुरु तलबमानको १०% प्रोत्साहन भत्ता र महङ्गी भत्ता (रु ५,०००) जोडी, CIT कट्टी घटाई र अन्त्यमा कर कट्टी (१%) घटाएर अन्तिम तलब निकालिन्छ। थप अन्य भत्ता भरिएमा त्यो अन्तिम तलबमा थपिन्छ। करार कर्मचारीका लागि छुट्टै सूत्र प्रयोग हुन्छ।</div>
   </div>
 
   <div id="result">
@@ -717,6 +723,50 @@
     let l = t.length > 3 ? t.slice(-3) : t, b = t.length > 3 ? t.slice(0, -3) : "";
     return "" !== b && (b = b.replace(/\B(?=(\d{2})+(?!\d))/g, ","), l = "," + l), "रु. " + r + toDev(b + l);
   }
+
+  function calculateIncomeTax(annualGrossSalary, annualDeductions, isMarried) {
+    let taxableIncome = annualGrossSalary - annualDeductions;
+    if (taxableIncome <= 0) return 0;
+
+    let tax = 0;
+
+    // Slab 1: पहिलो १० लाख सम्म (१%)
+    let slab1 = 1000000;
+    if (taxableIncome <= slab1) {
+      return taxableIncome * 0.01;
+    }
+    tax += slab1 * 0.01;
+    let remaining = taxableIncome - slab1;
+
+    // Slab 2: नेक्स्ट ५ लाख सम्म (१० देखि १५ लाख) - १०%
+    let slab2 = 500000;
+    if (remaining <= slab2) {
+      return tax + (remaining * 0.10);
+    }
+    tax += slab2 * 0.10;
+    remaining -= slab2;
+
+    // Slab 3: नेक्स्ट १० लाख सम्म (१५ देखि २५ लाख) - २०%
+    let slab3 = 1000000;
+    if (remaining <= slab3) {
+      return tax + (remaining * 0.20);
+    }
+    tax += slab3 * 0.20;
+    remaining -= slab3;
+
+    // Slab 4: नेक्स्ट १५ लाख सम्म (२५ देखि ४० लाख) - २७% (२०% + ७%)
+    let slab4 = 1500000;
+    if (remaining <= slab4) {
+      return tax + (remaining * 0.27);
+    }
+    tax += slab4 * 0.27;
+    remaining -= slab4;
+
+    // Slab 5: ४० लाख भन्दा माथिको रकम - २९% (२०% + ९%)
+    tax += remaining * 0.29;
+
+    return tax;
+  }
   
   function buildServiceOptions() {
     const e = document.getElementById("serviceSelect");
@@ -768,11 +818,18 @@
   
   function onEmpTypeChange() {
     const e = document.getElementById("empType").value;
+    const pWrap = document.getElementById("pensionWrap");
+    if ("contract" === e) {
+      pWrap.style.display = "none";
+    } else {
+      pWrap.style.display = "block";
+    }
+    
     document.getElementById("citWrap").style.display = "block";
     const a = document.getElementById("empNote");
     a.textContent = "contract" === e 
       ? "करार कर्मचारीलाई कर्मचारी सञ्चय कोष, बिमा कट्टी, महङ्गी भत्ता र आयकर कट्टी लाग्दैन — बरु शुरु तलबमानको १०% प्रोत्साहन भत्ता थपेर CIT कट्टी मात्र घटाइन्छ।" 
-      : "स्थायी कर्मचारीका लागि सञ्चय कोष (१०%) र बिमा (रु ४००) कट्टी हुन्छ; शुरु तलबमानको १०% प्रोत्साहन भत्ता र महङ्गी भत्ता (रु ५,०००) थपिन्छ। त्यसपछि CIT कट्टी घटाएर अन्त्यमा आयकर (१%) कट्टी हुन्छ।";
+      : "स्थायी कर्मचारीका लागि सञ्चय कोष (१०%), बिमा (रु ४००) र नियुक्ति मिति अनुसार योगदानमा आधारित पेन्सन (६%) कट्टी हुन्छ; शुरु तलबमानको १०% प्रोत्साहन भत्ता र महङ्गी भत्ता (रु ५,०००) थपिन्छ। CIT र पेन्सन/कोष कट्टी घटाई आयकर (स्ल्याब अनुसार) कट्टी गरिन्छ।";
     document.getElementById("result").style.display = "none";
   }
   
@@ -787,6 +844,9 @@
     const e = document.getElementById("posSelect").value, a = document.getElementById("gradeSelect").value;
     if ("" === e || "" === a) return void alert("कृपया पद/श्रेणी र ग्रेड संख्या दुवै छान्नुहोस्।");
     const r = POSITIONS[e], t = Number(a), l = r.base, b = r.rate * t, o = document.getElementById("empType").value;
+    const penType = document.getElementById("pensionType").value;
+    const isMarried = document.getElementById("maritalStatus").value === "married";
+
     document.getElementById("posBadge").textContent = r.label + " · " + toDev(t) + " ग्रेड" + ("contract" === o ? " · करार" : "");
     const s = document.getElementById("stepsBox");
     let d, m;
@@ -804,19 +864,60 @@
       ];
       if (extra.amount > 0) d.push({label:extra.name, sub:"+ "+fmt(extra.amount), amt:m, cls:"pos"});
     } else {
-      const pf = .1 * u, afterPf = u - pf, afterIns = afterPf - 400, inc = .1 * l, afterInc = afterIns + inc, afterDa = afterInc + 5e3, afterCit = afterDa - citDeduction, tax = .01 * afterCit, finalAmt = afterCit - tax, extra = getExtraAllowance();
+      const pf = .1 * u;
+      const pension = (penType === "new") ? (0.06 * u) : 0;
+      const insurance = 400;
+      const inc = .1 * l;
+      const da = 5000;
+
+      const annualGross = (u * 13) + (inc * 12) + (da * 12); 
+      const maxAllowedDeductionLimit = Math.min(annualGross * (1/3), 500000); 
+      const annualEligibleDeductions = Math.min((pf + pension + citDeduction) * 12, maxAllowedDeductionLimit) + (insurance * 12);
+      
+      const annualTaxableIncome = Math.max(0, annualGross - annualEligibleDeductions);
+      const annualTax = calculateIncomeTax(annualGross, annualEligibleDeductions, isMarried);
+      const monthlyTax = annualTax / 12;
+
+      const afterDeductionsAndAllowances = u - pf - pension - insurance + inc + da - citDeduction;
+      const finalAmt = afterDeductionsAndAllowances - monthlyTax;
+      const extra = getExtraAllowance();
       m = finalAmt + extra.amount;
+
+      let currentRunningAmt = u;
+
       d = [
         {label:"शुरु तलबमान", sub:r.label, amt:l, cls:""},
         {label:"कुल ग्रेड रकम", sub:toDev(t)+" ग्रेड × "+fmt(r.rate), amt:b, cls:"pos"},
-        {label:"जम्मा (शुरु तलब + कुल ग्रेड रकम)", sub:"", amt:u, cls:""},
-        {label:"कर्मचारी सञ्चय कोष कट्टी (१०%)", sub:"− "+fmt(pf), amt:afterPf, cls:"neg"},
-        {label:"बिमा कट्टी", sub:"− "+fmt(400), amt:afterIns, cls:"neg"},
-        {label:"प्रोत्साहन भत्ता (शुरु तलबमानको १०%)", sub:"+ "+fmt(inc), amt:afterInc, cls:"pos"},
-        {label:"महङ्गी भत्ता", sub:"+ "+fmt(5e3), amt:afterDa, cls:"pos"},
-        {label:"CIT कट्टी", sub:"− "+fmt(citDeduction), amt:afterCit, cls:"neg"},
-        {label:"कर कट्टी (१%)", sub:"− "+fmt(tax), amt:finalAmt, cls:"neg"}
+        {label:"जम्मा आधार तलब (शुरु तलब + कुल ग्रेड रकम)", sub:"", amt:u, cls:""}
       ];
+
+      currentRunningAmt -= pf;
+      d.push({label:"कर्मचारी सञ्चय कोष कट्टी (१०%)", sub:"− "+fmt(pf), amt:currentRunningAmt, cls:"neg"});
+
+      if (pension > 0) {
+        currentRunningAmt -= pension;
+        d.push({label:"योगदानमा आधारित निवृत्तिभरण कट्टी (६%)", sub:"− "+fmt(pension), amt:currentRunningAmt, cls:"neg"});
+      }
+
+      currentRunningAmt -= insurance;
+      d.push({label:"सावधिक जीवन बिमा कट्टी", sub:"− "+fmt(insurance), amt:currentRunningAmt, cls:"neg"});
+
+      currentRunningAmt += inc;
+      d.push({label:"प्रोत्साहन भत्ता (शुरु तलबमानको १०%)", sub:"+ "+fmt(inc), amt:currentRunningAmt, cls:"pos"});
+
+      currentRunningAmt += da;
+      d.push({label:"महङ्गी भत्ता", sub:"+ "+fmt(da), amt:currentRunningAmt, cls:"pos"});
+
+      currentRunningAmt -= citDeduction;
+      d.push({label:"CIT कट्टी", sub:"− "+fmt(citDeduction), amt:currentRunningAmt, cls:"neg"});
+
+      d.push({
+        label:"आयकर कट्टी (वार्षिक स्ल्याब नियमानुसार)", 
+        sub:"वार्षिक करयोग्य आम्दानी " + fmt(annualTaxableIncome) + " (वार्षिक कुल " + fmt(annualGross) + " मा योग्य कट्टी घटाई) बाट − " + fmt(monthlyTax), 
+        amt:finalAmt, 
+        cls:"neg"
+      });
+
       if (extra.amount > 0) d.push({label:extra.name, sub:"+ "+fmt(extra.amount), amt:m, cls:"pos"});
     }
     
